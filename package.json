@@ -1,0 +1,12 @@
+{
+  "name": "gradient-api",
+  "version": "1.0.0",
+  "description": "API de génération de gradients SVG pour Appian",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
