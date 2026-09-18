@@ -3,10 +3,14 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.get('/api/gradient', (req, res) => {
-  // Récupération des paramètres (par défaut : rouge vers bleu, 90 degrés)
+  // Récupération des paramètres
   const colors = req.query.colors || 'ff0000,0000ff';
   const angle = parseFloat(req.query.angle) || 90; 
   
+  // Nouveaux paramètres pour contrôler la taille de base de l'image
+  const width = req.query.width || '800'; 
+  const height = req.query.height || '800';
+
   const colorArr = colors.split(',');
 
   // Génération des étapes de couleurs
@@ -15,16 +19,17 @@ app.get('/api/gradient', (req, res) => {
     return `<stop offset="${offset}%" stop-color="#${c}" />`;
   }).join('');
 
-  // Conversion de l'angle (façon CSS) en coordonnées SVG (x1, y1) -> (x2, y2)
+  // Conversion de l'angle en coordonnées SVG
   const rad = angle * (Math.PI / 180);
   const x1 = (50 + Math.sin(rad + Math.PI) * 50).toFixed(2);
   const y1 = (50 - Math.cos(rad + Math.PI) * 50).toFixed(2);
   const x2 = (50 + Math.sin(rad) * 50).toFixed(2);
   const y2 = (50 - Math.cos(rad) * 50).toFixed(2);
 
-  // Création du SVG avec les coordonnées calculées
+  // Création du SVG
+  // L'attribut preserveAspectRatio="none" force l'image à stretcher !
   const svg = `
-  <svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+  <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="grad" x1="${x1}%" y1="${y1}%" x2="${x2}%" y2="${y2}%">
         ${stops}
@@ -39,7 +44,7 @@ app.get('/api/gradient', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('API active. Exemple : /api/gradient?colors=FF5733,33FF57&angle=135');
+  res.send('API active. Exemple : /api/gradient?colors=FF5733,33FF57&angle=135&width=1200&height=400');
 });
 
 app.listen(port, () => {
